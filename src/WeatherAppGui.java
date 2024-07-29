@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+//GUI
 public class WeatherAppGui extends JFrame{
     public WeatherAppGui()
     {
