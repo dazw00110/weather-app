@@ -1,12 +1,18 @@
+import org.json.simple.JSONObject;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 //GUI
 public class WeatherAppGui extends JFrame{
+    private JSONObject weatherData;
+
     public WeatherAppGui()
     {
         super("Weather App"); //title
@@ -26,13 +32,6 @@ public class WeatherAppGui extends JFrame{
         searchTextField.setFont(new Font("Dialog",Font.PLAIN,24));
 
         add(searchTextField);
-
-        JButton searchButton = new JButton(loadImage("src/images/search.png"));
-
-        //change cursor on search button
-        searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        searchButton.setBounds(375,13,47,45);
-        add(searchButton);
 
         //set background
         JLabel weatherConditionImage = new JLabel(loadImage("src/images/cloudy.png"));
@@ -70,11 +69,70 @@ public class WeatherAppGui extends JFrame{
         add(windspeedImage);
 
         //windspeed text
-        JLabel windseepdText = new JLabel("<html><b>Windspeed</b> 15km/h</html>");
-        windseepdText.setBounds(310,500,85,55);
-        windseepdText.setFont(new Font("Dialog",Font.PLAIN,16));
-        add(windseepdText);
+        JLabel windspeedText = new JLabel("<html><b>Windspeed</b> 15km/h</html>");
+        windspeedText.setBounds(310,500,85,55);
+        windspeedText.setFont(new Font("Dialog",Font.PLAIN,16));
+        add(windspeedText);
 
+        JButton searchButton = new JButton(loadImage("src/images/search.png"));
+
+        //change cursor on search button
+        searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        searchButton.setBounds(375,13,47,45);
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //get location from user
+                String userInput = searchTextField.getText();
+
+                //validate input - remove whitespace
+                if(userInput.replaceAll("\\s","").length() <=0)
+                {
+                    return;
+                }
+
+                //retrieve weather data
+                weatherData = WeatherApp.getWeatherData(userInput);
+
+
+                //update weather image
+                String weatherCondition = (String) weatherData.get("weather_condition");
+
+                //update weather image depending on weather condition
+                switch (weatherCondition)
+                {
+                    case "Clear":
+                        weatherConditionImage.setIcon(loadImage("src/images/clear.png"));
+                        break;
+                    case "Cloudy":
+                        weatherConditionImage.setIcon(loadImage("src/images/cloudy.png"));
+                        break;
+                    case "Rain":
+                        weatherConditionImage.setIcon(loadImage("src/images/rain.png"));
+                        break;
+                    case "Snow":
+                        weatherConditionImage.setIcon(loadImage("src/images/snow.png"));
+                        break;
+                }
+
+                //update temperature text;
+                double temperature = ((Number) weatherData.get("temperature")).doubleValue();
+                temperatureText.setText(temperature + " C");
+
+                weatherConditionDesc.setText(weatherCondition);
+
+                //update humidity text
+                long humidity = ((Number) weatherData.get("humidity")).longValue();
+                humidityText.setText("<html><b>Humidity</b> " + humidity + "%</html>");
+
+                //update windspeed text
+                double windspeed = ((Number) weatherData.get("windspeed")).doubleValue();
+                windspeedText.setText("<html><b>Windspeed</b> " + windspeed + "km/h</html>");
+
+
+            }
+        });
+        add(searchButton);
     }
 
     private ImageIcon loadImage(String resourcePath)

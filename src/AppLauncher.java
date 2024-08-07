@@ -1,3 +1,6 @@
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import javax.swing.*;
 
 public class AppLauncher {
@@ -6,9 +9,12 @@ public class AppLauncher {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                //new WeatherAppGui().setVisible(true);
+                //display the weather GUI
+                new WeatherAppGui().setVisible(true);
 
-                System.out.println(WeatherApp.getLocationData("Tokyo"));
+//                System.out.println(WeatherApp.getLocationData("Tokyo"));
+//
+//                System.out.println(WeatherApp.getCurrentTime());
             }
         });
     }
